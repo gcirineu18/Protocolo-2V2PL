@@ -24,7 +24,7 @@ public class Main{
     // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1
     private static boolean correctTransaction(String scheduler){
          
-      if(scheduler.isBlank() || scheduler.isEmpty() || scheduler.contains(" ")){
+      if( scheduler.isEmpty() || scheduler.contains(" ")){
         System.out.println("O escalonador está vazio ou contém espaços.");
         return false;
       }
