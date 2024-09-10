@@ -1,22 +1,22 @@
-
+import java.util.ArrayList;
 class Scheduler{
   
-  String scheduler;
-  String[] operation;
+  
+  ArrayList<String> operations;
 
-  public Scheduler(String scheduler){
-    this.scheduler = scheduler;
+  public Scheduler(ArrayList<String> operations){
+    this.operations = operations;
   }
 
-  public String[] getOperation() {
-    
-      return operation;
-  }
+
   public void writeLock(String wl){
        
   }
 
   public void readLock(String rl){
+
+  }
+  public void updateLock(String ul){
 
   }
   public void certifyLock(String cl){
