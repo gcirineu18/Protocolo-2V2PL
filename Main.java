@@ -23,5 +23,8 @@ public class Main{
      Scheduler scheduler = new Scheduler(arrayList);
      scheduler.scheduleOperations();
 
+    // SysLockTable table =  new SysLockTable(schedulerLine);
+     
+
      }
 }

@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 class Scheduler{
   
-  
+  private SysLockTable sysLockTable ;
   ArrayList<String> operations;
 
   public Scheduler(ArrayList<String> operations){
     this.operations = operations;
+    sysLockTable = new SysLockTable();
   }
 
   public void scheduleOperations(){
@@ -13,7 +14,6 @@ class Scheduler{
       String operation;
       for(int i = 0; i < numberElements ; i++){
          operation = this.operations.get(i);
-
          grantLock(operation);
       }
   }
@@ -34,18 +34,16 @@ class Scheduler{
    }
   }
 
-  public boolean grantWriteLock(String wl){
-    
+  private boolean grantWriteLock(String wl){
+      return true;
+  }
+  private boolean grantReadLock(String rl){
     return true;
   }
-
-  public boolean grantReadLock(String rl){
+  private boolean grantUpdateLock(String ul){
     return true;
   }
-  public boolean grantUpdateLock(String ul){
-    return true;
-  }
-  public boolean grantCertifyLock(String cl){
+  private boolean grantCertifyLock(String cl){
     return true;
   }
 
