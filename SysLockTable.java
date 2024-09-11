@@ -1,8 +1,12 @@
-public class SysLockTable {
-  String[][] SysLock;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-  public SysLockTable() {
-  SysLock = new String[1][5];
-  SysLock[0] = new String[]{"tId", "objId", "objType", "blockType", "status"};
-  }
+public class SysLockTable {
+  ArrayList<ArrayList<String>> sysLockTable ;
+
+  public SysLockTable(String operation) {
+  sysLockTable = new ArrayList<>();
+  sysLockTable.add(new ArrayList<>(Arrays.asList("tId", "objId", "objType", "blockType", "status")));
+  
+}
 }

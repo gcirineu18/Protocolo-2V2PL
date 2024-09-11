@@ -8,19 +8,45 @@ class Scheduler{
     this.operations = operations;
   }
 
+  public void scheduleOperations(){
+      int numberElements = this.operations.size();
+      String operation;
+      for(int i = 0; i < numberElements ; i++){
+         operation = this.operations.get(i);
 
-  public void writeLock(String wl){
-       
+         grantLock(operation);
+      }
   }
 
-  public void readLock(String rl){
-
+  public void grantLock(String operation){
+    char[] arrayOperation = operation.toCharArray();   
+    if(arrayOperation[0] =='r'){
+       grantReadLock(operation);
+    }
+    else if(arrayOperation[0] =='w'){
+       grantWriteLock(operation);  
+    }
+    else if(arrayOperation[0] =='c'){
+      grantCertifyLock(operation);  
+   }
+   else{
+      grantUpdateLock(operation);
+   }
   }
-  public void updateLock(String ul){
 
+  public boolean grantWriteLock(String wl){
+    
+    return true;
   }
-  public void certifyLock(String cl){
 
+  public boolean grantReadLock(String rl){
+    return true;
+  }
+  public boolean grantUpdateLock(String ul){
+    return true;
+  }
+  public boolean grantCertifyLock(String cl){
+    return true;
   }
 
 }

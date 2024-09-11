@@ -11,15 +11,17 @@ public class Main{
 
       Scanner scanner = new Scanner(System.in);
       
-      String scheduler = scanner.nextLine();
+      String schedulerLine = scanner.nextLine();
 
-      while(!Utils.correctTransaction(scheduler)){
+      while(!Utils.correctTransaction(schedulerLine)){
         System.out.println("O escalonador contém erros, por favor, digite novamente\n");
-        scheduler = scanner.nextLine();
+        schedulerLine = scanner.nextLine();
       }          
       scanner.close();
 
-     ArrayList<String> arrayList =  Utils.parseScheduler(scheduler);
-     System.out.print(arrayList);
+     ArrayList<String> arrayList =  Utils.parseScheduler(schedulerLine);
+     Scheduler scheduler = new Scheduler(arrayList);
+     scheduler.scheduleOperations();
+
      }
 }
