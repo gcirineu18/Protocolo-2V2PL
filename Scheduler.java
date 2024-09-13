@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-class Scheduler{
+class Scheduler extends SysLockTable{
   
   private SysLockTable sysLockTable;
   ArrayList<String> operations;
@@ -22,6 +22,7 @@ class Scheduler{
   }
 
   //  w2(u)ul4(x)r3(y)c1
+  // Tenta conceder o bloqueio tendo em vista possíveis operações em conflito
   public String tryToGrantLock(String operation){
     char[] arrayOperation = operation.toCharArray();   
     boolean granted = false;
@@ -69,15 +70,14 @@ class Scheduler{
         for(int i = 0; i< objects.size(); i++){
           readLock = String.format("rl%c(%s)",transactionNumber,objects.get(i));          
           schedule = canScheduleOperation(readLock);
-          if(!schedule){
-            
+          if(!schedule){      
             sysLockTable.addOperationToTable(operation, 2);
             break;
           }
         }
         if(schedule){
           sysLockTable.addOperationToTable(operation, 1);
-          executeCommit(tID);
+          commitTransaction(tID);
         }
         granted = schedule;  
       }
@@ -142,12 +142,12 @@ class Scheduler{
   }
 
 
-  private void executeCommit(String transactionId){
+  private void commitTransaction(String transactionId){
  
   }
 
-  public void printTable(){
 
+  public void printTable(){
     int linhas = this.sysLockTable.sysLockTable.size() ;
     int colunas = this.sysLockTable.sysLockTable.get(0).size();
     for(int i = 0; i < linhas ; i++){
@@ -157,23 +157,4 @@ class Scheduler{
       System.out.printf("\n");
     }
   }
-
-  // public void scheduleOperations(){
-  //   int numberElements = this.operations.size();
-  //   String operation;
-  //   for(int i = 0; i < numberElements ; i++){
-  //      operation = this.operations.get(i);
-  //      //grantLock(operation);
-  //      this.sysLockTable.addOperationToTable(operation, 1);
-  //   }
-  //   int linhas = this.sysLockTable.sysLockTable.size() ;
-  //   int colunas = this.sysLockTable.sysLockTable.get(0).size();
-  //   for(int i = 0; i < linhas ; i++){
-  //     for(int j = 0; j < colunas; j++){
-  //       System.out.printf(" |%s| ",this.sysLockTable.sysLockTable.get(i).get(j));
-  //     }
-  //     System.out.printf("\n");
-  //   }
-  // }   
-
 }

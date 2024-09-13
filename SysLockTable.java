@@ -3,15 +3,14 @@ import java.util.Arrays;
 
 public class SysLockTable {
   public ArrayList<ArrayList<String>> sysLockTable;
-  private String operation;
 
-  public SysLockTable() {
+  protected SysLockTable() {
   this.sysLockTable = new ArrayList<>();
   this.sysLockTable.add(new ArrayList<>(Arrays.asList("tId", "objId", "objType", "blockType", "status")));  
 }
 
 // r4(v)w2(u)c1
-  public void addOperationToTable(String operation, int status){
+  protected void addOperationToTable(String operation, int status){
     char[] arrayOperation = operation.toCharArray(); 
     String tId;
     String objId;
