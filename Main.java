@@ -21,8 +21,9 @@ public class Main{
 
      ArrayList<String> arrayList =  Utils.parseScheduler(schedulerLine);
      Scheduler scheduler = new Scheduler(arrayList);
-     scheduler.scheduleOperations();
-
+     System.out.println(scheduler.scheduleOperations());
+     
+     scheduler.printTable();
     // SysLockTable table =  new SysLockTable(schedulerLine);
      
 

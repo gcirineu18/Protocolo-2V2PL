@@ -26,15 +26,29 @@ public class SysLockTable {
       objId = Character.toString(arrayOperation[3]);
       this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "wl", Integer.toString(status))));
 
-   }
+   } 
+   // Deve checar antes se existe operação de escrita na transação para convertê-la em cl, se não, vapo
    else if(arrayOperation[0] =='c'){
-    tId = "T" + arrayOperation[1];
-    objId = "-";
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "cl", Integer.toString(status))));
 
+    int linhas = this.sysLockTable.size() ;
+    int colunas = this.sysLockTable.get(0).size();
+    ArrayList<String> aux;
+    tId = "T" + arrayOperation[1];
+          
+    for(int i = 1; i < linhas ; i++){
+      aux = this.sysLockTable.get(i);
+      for(int j = 0; j < colunas; j++){         
+        if((aux.get(0).equals(tId) && aux.get(3).equals("wl"))){             
+            aux.set(3, "cl");
+            aux.set(4, Integer.toString(status));
+        }
+      }   
+    } 
   }
   else{
-     
+    tId = "T" + arrayOperation[1];
+    objId = Character.toString(arrayOperation[3]);
+    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "ul", Integer.toString(status))));
   }  
   }
 
