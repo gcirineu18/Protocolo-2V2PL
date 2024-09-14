@@ -30,18 +30,19 @@ public class SysLockTable {
    else if(arrayOperation[0] =='c'){
 
     int linhas = this.sysLockTable.size() ;
-    int colunas = this.sysLockTable.get(0).size();
     ArrayList<String> aux;
     tId = "T" + arrayOperation[1];
           
     for(int i = 1; i < linhas ; i++){
-      aux = this.sysLockTable.get(i);
-      for(int j = 0; j < colunas; j++){         
-        if((aux.get(0).equals(tId) && aux.get(3).equals("wl") && status == 1 )){             
+      aux = this.sysLockTable.get(i);            
+      if(aux.get(0).equals(tId) && status == 1 && aux.get(3).equals("wl")){             
             aux.set(3, "cl");
             aux.set(4, Integer.toString(status));
-        }
-      }   
+      }
+      else{
+            this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "-", "t", "c", Integer.toString(status))));
+            break;
+      } 
     } 
   }
   else{
@@ -51,10 +52,34 @@ public class SysLockTable {
   }  
   }
   
-  // A medida que alguma operação muda, um trigger chamará esse método para
-  // checar se há alguma mudança.
-  protected void searchChangesOnTable(String operation, int status){
-    
+  // Muda o status de alguma operação após algum evento.
+  // r4(v)w2(u)c1
+  protected void changeStatusOnTable(String operation, int status){
+    char[] arrayOperation = operation.toCharArray(); 
+    String tId = "T" + arrayOperation[1];
+    //String objId = Character.toString(arrayOperation[3]);
+    String blockType = Character.toString(arrayOperation[0]);
+    int linhas = this.sysLockTable.size() ;
+    ArrayList<String> aux;
+          
+    for(int i = 1; i < linhas; i++){
+      aux = this.sysLockTable.get(i); 
+      if(blockType.equals("c")){
+        if(aux.get(0).equals(tId) && status == 1 && aux.get(3).equals("wl")){             
+            aux.set(3, "cl");
+            aux.set(4, Integer.toString(status));
+        }
+        else if(aux.get(3).equals("c") && aux.get(0).equals(tId) && status == 2 ){
+          this.sysLockTable.remove(i);
+        }   
+      }  
+      else{
+        if(aux.get(0).equals(tId) && status == 2 && aux.get(3).equals(String.format("%sl",blockType))){             
+          aux.set(4, Integer.toString(status));
+      }
+      }        
+      
+    } 
   }
 
 
