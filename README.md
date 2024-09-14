@@ -5,12 +5,12 @@ duvidas:
 - como ficará a tabela de compatibilidade
 
 pendências:
-[x] WaitforGraph: função para: (levy)
-    [x] criar grafo
-    [x] pra verificar se tem loop
-    [x] se houver ciclo, abortar a transação mais recente
-[x] Verificar a granulosidade
-[x] Update lock (bru)
+[] WaitforGraph: função para: (levy)
+    [] criar grafo
+    [] pra verificar se tem loop
+    [] se houver ciclo, abortar a transação mais recente
+[] Verificar a granulosidade
+[] Update lock (bru)
 [x] Criar loop para verificar se os bloqueios não concedidos podem ser concedidos apos algum evento de mudança de status (gui)
 
 - Se houver operação de commit, ela não puder ser escalonada por que operações anteriores estão ainda aguardando, ela será adicionada na tabela, só 
