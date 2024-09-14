@@ -6,7 +6,7 @@ import java.lang.String;
 
 public class Main{
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException{
       System.out.println("Digite o escalonamento:");
 
       Scanner scanner = new Scanner(System.in);

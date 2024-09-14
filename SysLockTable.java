@@ -37,7 +37,7 @@ public class SysLockTable {
     for(int i = 1; i < linhas ; i++){
       aux = this.sysLockTable.get(i);
       for(int j = 0; j < colunas; j++){         
-        if((aux.get(0).equals(tId) && aux.get(3).equals("wl"))){             
+        if((aux.get(0).equals(tId) && aux.get(3).equals("wl") && status == 1 )){             
             aux.set(3, "cl");
             aux.set(4, Integer.toString(status));
         }
@@ -49,6 +49,12 @@ public class SysLockTable {
     objId = Character.toString(arrayOperation[3]);
     this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "ul", Integer.toString(status))));
   }  
+  }
+  
+  // A medida que alguma operação muda, um trigger chamará esse método para
+  // checar se há alguma mudança.
+  protected void searchChangesOnTable(String operation, int status){
+    
   }
 
 

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+//import java.util.concurrent.CompletableFuture;
 class Scheduler extends SysLockTable{
   
   private SysLockTable sysLockTable;
@@ -9,7 +10,7 @@ class Scheduler extends SysLockTable{
     this.sysLockTable = new SysLockTable();
   }
 
-  public String scheduleOperations(){
+  public String scheduleOperations() throws InterruptedException{
       int numberElements = this.operations.size();
       String operation;
       String newScheduler = "S = ";
@@ -23,7 +24,7 @@ class Scheduler extends SysLockTable{
 
   //  w2(u)ul4(x)r3(y)c1
   // Tenta conceder o bloqueio tendo em vista possíveis operações em conflito
-  public String tryToGrantLock(String operation){
+  public String tryToGrantLock(String operation) throws InterruptedException{
     char[] arrayOperation = operation.toCharArray();   
     boolean granted = false;
     char transactionNumber = arrayOperation[1];
@@ -117,7 +118,8 @@ class Scheduler extends SysLockTable{
         table = this.sysLockTable.sysLockTable.get(i); 
 
         if((table.get(0).equals(tId) && table.get(4).equals("2" ))||
-        (!table.get(0).equals(tId) && table.get(1).equals(objId) && table.get(3).equals(blockType))){
+        (!table.get(0).equals(tId) && table.get(1).equals(objId) && 
+        table.get(3).equals(blockType) && table.get(4).equals("1"))){
             return false;
           }           
         } 
@@ -142,10 +144,33 @@ class Scheduler extends SysLockTable{
   }
 
 
-  private void commitTransaction(String transactionId){
- 
+  private void commitTransaction(String transactionId) throws InterruptedException{
+    int linhas = this.sysLockTable.sysLockTable.size() ;
+    String tId;
+    
+    Thread.sleep(1000);
+
+    for(int i = 0; i < linhas ; i++){
+      tId = this.sysLockTable.sysLockTable.get(i).get(0);
+      
+      if(tId.equals(transactionId)){      
+       this.sysLockTable.sysLockTable.remove(i);
+       i = 0;
+       linhas--;    
+      }
+    }
+    System.out.printf("Transação %s foi commitada.\n", transactionId); 
   }
 
+
+  // private CompletableFuture<Void> listenTableEvents(){
+  //   return CompletableFuture.runAsync(() ->{
+  //     while(true){
+        
+  //     }   
+  //   });
+    
+  // }
 
   public void printTable(){
     int linhas = this.sysLockTable.sysLockTable.size() ;
