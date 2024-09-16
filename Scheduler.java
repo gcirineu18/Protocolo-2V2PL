@@ -19,9 +19,8 @@ public class Scheduler extends SysLockTable{
       for(int i = 0; i < numberElements ; i++){
          operation = this.operations.get(i);
          newScheduler = newScheduler.concat(tryToGrantLock(operation, false));  
-         listenTableEvents(); 
-         //printTable();
-         
+         newScheduler = newScheduler.concat(listenTableEvents());         
+         printTable();  
       }
       return newScheduler;
   }
@@ -92,10 +91,8 @@ public class Scheduler extends SysLockTable{
         for(int i = 0; i< objects.size(); i++){
           readLock = String.format("rl%c(%s)",transactionNumber,objects.get(i));          
           schedule = canScheduleOperation("c", readLock);
-          if(!schedule){   
-             
-            if(!alreadyAdded){
-                
+          if(!schedule){            
+            if(!alreadyAdded){               
               sysLockTable.addOperationToTable(operation, 2);
               break;
             }            
@@ -112,9 +109,31 @@ public class Scheduler extends SysLockTable{
           sysLockTable.changeStatusOnTable(operation, 1);
           commitTransaction(tID);
           }
-        }
-       granted = schedule;  
+        }       
       }
+      else{   
+      String lock = String.format("--%c(-)",transactionNumber);    
+      granted = canScheduleOperation("c",lock);
+      if(!alreadyAdded){
+        if(granted){
+          sysLockTable.addOperationToTable(operation, 1); 
+          commitTransaction(tID);
+        }
+        else{
+          sysLockTable.addOperationToTable(operation, 2); 
+        }
+      }
+      else{
+        if(granted){
+          sysLockTable.changeStatusOnTable(operation, 1);
+          commitTransaction(tID);
+        }
+        else{
+          sysLockTable.changeStatusOnTable(operation, 2); 
+        } 
+      }     
+      }
+      granted = schedule;  
    }
    else{
      
@@ -157,7 +176,7 @@ public class Scheduler extends SysLockTable{
             (!table.get(0).equals(tId) && table.get(1).equals(objId) && 
             table.get(3).equals(blockType) && table.get(4).equals("1"))){
               return false;
-          }              
+        }              
       } 
     } 
   }   
@@ -200,7 +219,7 @@ public class Scheduler extends SysLockTable{
   }
 
   //  w2(u)ul4(x)r3(y)c1
-  private void listenTableEvents() throws InterruptedException{
+  private String listenTableEvents() throws InterruptedException{
     int linhas = this.sysLockTable.sysLockTable.size() ;
     String status;
     String tId;
@@ -219,7 +238,7 @@ public class Scheduler extends SysLockTable{
         blockType =blockType.substring(0,1); 
         op= String.format("%s%s(%s)",blockType,tId,objId);
         
-        tryToGrantLock(op, true);
+        return tryToGrantLock(op, true);
         
       }
       else if(status.equals("2") && blockType.equals("c")){
@@ -227,9 +246,11 @@ public class Scheduler extends SysLockTable{
         objId = this.sysLockTable.sysLockTable.get(i).get(1); 
         blockType =blockType.substring(0); 
         op= String.format("%s%s",blockType,tId);
-        tryToGrantLock(op, true); 
+        return tryToGrantLock(op, true); 
       }
     }
+
+    return "";
   }
 
   // checa se há apenas uma transação escalonada no momento

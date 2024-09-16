@@ -3,15 +3,20 @@ Implementação do protocolo conservador 2V2PL, para controle de concorrência, 
 
 duvidas:
 - como ficará a tabela de compatibilidade
+- a operação de commit pode ser instântanea (ser executada em sua própria iteração, 
+consequentemente não podendo haver conflitos de cl com qualquer outro)?
 
 pendências:
 [] WaitforGraph: função para: (levy)
-    [] criar grafo
-    [] pra verificar se tem loop
+    [] criar grafo quando houverem operações em conflito
     [] se houver ciclo, abortar a transação mais recente
+
 [] Verificar a granulosidade
+
 [] Update lock (bru)
+
 [x] Criar loop para verificar se os bloqueios não concedidos podem ser concedidos apos algum evento de mudança de status (gui)
+
 
 - Se houver operação de commit c, e ela não puder ser escalonada por que operações anteriores estão ainda aguardando, ela será adicionada na tabela, só 
 com TId e  blockType C, status 2

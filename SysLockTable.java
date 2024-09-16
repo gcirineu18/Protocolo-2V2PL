@@ -18,12 +18,12 @@ public class SysLockTable {
     if(arrayOperation[0] =='r'){
       tId = "T" + arrayOperation[1];
       objId = Character.toString(arrayOperation[3]);
-      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "rl", Integer.toString(status))));
+      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "tupla", "rl", Integer.toString(status))));
    }
    else if(arrayOperation[0] =='w'){
       tId = "T" + arrayOperation[1];
       objId = Character.toString(arrayOperation[3]);
-      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "wl", Integer.toString(status))));
+      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "tupla", "wl", Integer.toString(status))));
 
    } 
    // Deve checar antes se existe operação de escrita na transação para convertê-la em cl, se não, vapo
@@ -40,7 +40,7 @@ public class SysLockTable {
             aux.set(4, Integer.toString(status));
       }
       else{
-            this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "-", "t", "c", Integer.toString(status))));
+            this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "-", "tupla", "c", Integer.toString(status))));
             break;
       } 
     } 
@@ -48,7 +48,7 @@ public class SysLockTable {
   else{
     tId = "T" + arrayOperation[1];
     objId = Character.toString(arrayOperation[3]);
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "t", "ul", Integer.toString(status))));
+    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "tupla", "ul", Integer.toString(status))));
   }  
   }
   
@@ -57,7 +57,6 @@ public class SysLockTable {
   protected void changeStatusOnTable(String operation, int status){
     char[] arrayOperation = operation.toCharArray(); 
     String tId = "T" + arrayOperation[1];
-    //String objId = Character.toString(arrayOperation[3]);
     String blockType = Character.toString(arrayOperation[0]);
     int linhas = this.sysLockTable.size() ;
     ArrayList<String> aux;

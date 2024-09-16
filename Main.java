@@ -14,7 +14,7 @@ public class Main{
       String schedulerLine = scanner.nextLine();
 
       while(!Utils.correctTransaction(schedulerLine)){
-        System.out.println("O escalonador contém erros, por favor, digite novamente\n");
+        System.err.println("O escalonador contém erros, por favor, digite novamente\n");
         schedulerLine = scanner.nextLine();
       }          
       scanner.close();
