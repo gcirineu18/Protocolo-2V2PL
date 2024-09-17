@@ -20,7 +20,7 @@ public class Scheduler extends SysLockTable{
          operation = this.operations.get(i);
          newScheduler = newScheduler.concat(tryToGrantLock(operation, false));  
          newScheduler = newScheduler.concat(listenTableEvents());         
-         printTable();  
+        // printTable();  
       }
       return newScheduler;
   }
@@ -218,7 +218,7 @@ public class Scheduler extends SysLockTable{
     System.out.printf("Transação %s foi commitada.\n", transactionId); 
   }
 
-  //  w2(u)ul4(x)r3(y)c1
+   // w2(u)ul4(x)r3(y)c1
   private String listenTableEvents() throws InterruptedException{
     int linhas = this.sysLockTable.sysLockTable.size() ;
     String status;
@@ -226,8 +226,16 @@ public class Scheduler extends SysLockTable{
     String objId;
     String blockType; 
     String op;
-    for(int i = 0; i < linhas ; i++){
-      
+    String scheduledOperations = "";
+    String aux = "";
+    int i = 1;
+
+    
+    while (i<linhas) {
+      if(!aux.isEmpty()){
+          i = 1;
+      }
+      aux = "";
       status = this.sysLockTable.sysLockTable.get(i).get(4);
       blockType = this.sysLockTable.sysLockTable.get(i).get(3);
       tId = this.sysLockTable.sysLockTable.get(i).get(0);
@@ -236,22 +244,25 @@ public class Scheduler extends SysLockTable{
         tId = tId.substring(1);
         objId = this.sysLockTable.sysLockTable.get(i).get(1); 
         blockType =blockType.substring(0,1); 
-        op= String.format("%s%s(%s)",blockType,tId,objId);
+        op= String.format("%s%s(%s)",blockType,tId,objId);      
         
-        return tryToGrantLock(op, true);
-        
+        aux = aux.concat(tryToGrantLock(op, true)); 
       }
       else if(status.equals("2") && blockType.equals("c")){
         tId = tId.substring(1);
         objId = this.sysLockTable.sysLockTable.get(i).get(1); 
         blockType =blockType.substring(0); 
         op= String.format("%s%s",blockType,tId);
-        return tryToGrantLock(op, true); 
+        
+        aux = aux.concat(tryToGrantLock(op, true));
       }
-    }
 
-    return "";
+      scheduledOperations = scheduledOperations.concat(aux);
+      i++;
+    }
+    return scheduledOperations;
   }
+
 
   // checa se há apenas uma transação escalonada no momento
   private boolean onlyCurrentTransaction(String tId){

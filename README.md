@@ -2,18 +2,23 @@
 Implementação do protocolo conservador 2V2PL, para controle de concorrência, com suporte à múltipla granulosidade de bloqueio, detecção e prevenção (bloqueio do tipo update) de deadlocks. Na implementação do protocolo, a entrada deverá ser um escalonamento (conjunto de transações e suas operações) qualquer. A saída deve mostrar a sincronização correta das operações do escalonamento fornecido. A detecção de deadlocks deverá utilizar a estratégia do grafo de espera.
 
 duvidas:
+- os bloqueios sobre página tabela serão apenas sobre uma de cada?
 - como ficará a tabela de compatibilidade
 - a operação de commit pode ser instântanea (ser executada em sua própria iteração, 
 consequentemente não podendo haver conflitos de cl com qualquer outro)?
+- como representar o update lock?
+
 
 pendências:
-[] WaitforGraph: função para: (levy)
-    [] criar grafo quando houverem operações em conflito
-    [] se houver ciclo, abortar a transação mais recente
+[ ] WaitforGraph: função para: (levy)
+    
+    [ ] criar grafo quando houverem operações em conflito
+    
+    [ ] se houver ciclo, abortar a transação mais recente
 
-[] Verificar a granulosidade
+[ ] Verificar a granulosidade
 
-[] Update lock (bru)
+[ ] Update lock (bru)
 
 [x] Criar loop para verificar se os bloqueios não concedidos podem ser concedidos apos algum evento de mudança de status (gui)
 

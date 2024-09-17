@@ -5,7 +5,9 @@ public class Utils {
 
 
      // Checa se as operações da transação estão sintáticamente corretas.
-    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1
+    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1   
+    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1w4(u)r3(x)c4w2(x)c2w3(u)w3(z)c3
+    // r2(v)r1(x)w2(x)r3(v)r1(y)w3(y)r2(z)w3(z)c3c1c2
     public static boolean correctTransaction(String scheduler){     
       if(scheduler.isEmpty() || scheduler.contains(" ")){
         System.out.println("O escalonador está vazio ou contém espaços.");
