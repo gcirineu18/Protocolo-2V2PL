@@ -20,16 +20,23 @@ public class Operation {
         String objId;
         String blockType;
         String op = "";
-        status = line.get(4);
+        
         blockType = line.get(3);
         tId = line.get(0);
         
-        if(!blockType.equals("c")){   
+        if(!blockType.equals("c")){  
+          tId = tId.substring(1);
+          objId = line.get(1); 
+          
 
-            tId = tId.substring(1);
-            objId = line.get(1); 
-            blockType =blockType.substring(0,1); 
-            op = String.format("%s%s(%s)",blockType,tId,objId);                   
+          if(blockType.equals("cl")){
+              op = String.format("w%s(%s)",tId,objId); 
+           }
+          else{
+            blockType = blockType.substring(0,1); 
+            op = String.format("%s%s(%s)",blockType,tId,objId);
+            }
+                               
           }
     
           else if(blockType.equals("c")){      

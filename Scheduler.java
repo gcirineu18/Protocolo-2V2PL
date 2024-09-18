@@ -42,7 +42,7 @@ public class Scheduler extends SysLockTable{
     char objectId;
     String certifyLock;
     String writeLock;
-    
+    String newScheduler = "";
     if(arrayOperation[0] =='r'){
 
       objectId = arrayOperation[3];
@@ -105,13 +105,13 @@ public class Scheduler extends SysLockTable{
         if(!alreadyAdded){
            if(schedule){
             sysLockTable.addOperationToTable(operation, 1);      
-            commitTransaction(tID);
+           newScheduler = commitTransaction(tID);
            }  
         }
         else{
           if(schedule){
           sysLockTable.changeStatusOnTable(operation, 1);
-          commitTransaction(tID);
+         newScheduler = commitTransaction(tID);
           }
         }       
       }
@@ -121,7 +121,7 @@ public class Scheduler extends SysLockTable{
       if(!alreadyAdded){
         if(granted){
           sysLockTable.addOperationToTable(operation, 1); 
-          commitTransaction(tID);
+         newScheduler = commitTransaction(tID);
         }
         else{
           sysLockTable.addOperationToTable(operation, 2); 
@@ -130,7 +130,7 @@ public class Scheduler extends SysLockTable{
       else{
         if(granted){
           sysLockTable.changeStatusOnTable(operation, 1);
-          commitTransaction(tID);
+         newScheduler = commitTransaction(tID);
         }
         else{
           sysLockTable.changeStatusOnTable(operation, 2); 
@@ -144,12 +144,8 @@ public class Scheduler extends SysLockTable{
    }
    if(!granted && this.aGraph.hasCycle()){        
     deadLockDetection.deadLocked(operation);
-  }  
-
-   if(granted){
-      return operation;
-    }   
-    return "";
+  }   
+    return newScheduler;
   }
 
 
@@ -217,22 +213,28 @@ public class Scheduler extends SysLockTable{
   }
 
 
-  private void commitTransaction(String transactionId) throws InterruptedException{
+  private String commitTransaction(String transactionId) throws InterruptedException{
+    ArrayList<String> tupla;
     int linhas = this.sysLockTable.sysLockTable.size() ;
     String tId;
     
     Thread.sleep(1000);
-
+    String transactionOperations = "";
+    printTable();
     for(int i = 0; i < linhas ; i++){
       tId = this.sysLockTable.sysLockTable.get(i).get(0);
-      
-      if(tId.equals(transactionId)){      
+
+     
+      if(tId.equals(transactionId)){  
+       tupla = this.sysLockTable.sysLockTable.get(i);
+       transactionOperations = transactionOperations.concat(Operation.rebuildOperation(tupla));   
        this.sysLockTable.sysLockTable.remove(i);
        i = 0;
        linhas--;    
       }
     }
     System.out.printf("Transação %s foi commitada.\n", transactionId); 
+    return transactionOperations;
   }
   
 
@@ -262,7 +264,7 @@ public class Scheduler extends SysLockTable{
     }  
       linhas = this.sysLockTable.sysLockTable.size();
     }
-    printTable();
+    
     return scheduledOperations;
   }
 
