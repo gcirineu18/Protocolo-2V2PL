@@ -3,21 +3,37 @@ import java.util.ArrayList;
 
 public class WaitforGraph {
     
-    ArrayList<ArrayList<Integer>> arestas = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> arestas;
+    public WaitforGraph(){
+     this.arestas = new ArrayList<>();
+    }
+    
+    
 
-    public void addEdge(ArrayList<ArrayList<Integer>> arestas,int u, int v) {
-        while (arestas.size() <= u || arestas.size() <= v) {
-            arestas.add(new ArrayList<>());
+    public void addEdge(int u, int v) {
+        while (this.arestas.size() <= u || this.arestas.size() <= v) {
+            this.arestas.add(new ArrayList<>());
         }
-        arestas.get(u).add(v);
+        ArrayList<Integer> line = this.arestas.get(u);
+        boolean alreadyAdded = false;
+
+        for(int i= 0; i< line.size(); i++ ){
+            if( line.get(i) ==  v){
+                alreadyAdded = true;
+            }
+        }      
+        if(!alreadyAdded) this.arestas.get(u).add(v);
+        // printGraph();
+        
     }
     
     public void removeEdge(int u){
-        arestas.get(u).clear();
-        for(int i = 0; i<arestas.size(); i++){
-            for(int j = 0; j<arestas.get(i).size(); j++){
-                if(arestas.get(i).get(j) == u){
-                    arestas.get(i).remove(j);
+        
+        this.arestas.get(u).clear();
+        for(int i = 0; i<this.arestas.size(); i++){
+            for(int j = 0; j<this.arestas.get(i).size(); j++){
+                if(this.arestas.get(i).get(j) == u){
+                    this.arestas.get(i).remove(j);
                 }
             }
         }
@@ -33,7 +49,7 @@ public class WaitforGraph {
         visited[v] = true;
         recStack[v] = true;
 
-        for (int vizinhos : arestas.get(v)) {
+        for (int vizinhos : this.arestas.get(v)) {
             if (DFS(vizinhos, visited, recStack)) {
                 return true;  // Se ciclo for encontrado, retorna true
             }
@@ -45,7 +61,7 @@ public class WaitforGraph {
 
     // Função principal que faz DFS para todos os vértices e detecta ciclo
     public boolean hasCycle() {
-        int numVertices = arestas.size();
+        int numVertices = this.arestas.size();
         boolean[] visited = new boolean[numVertices];   // Para marcar vértices visitados
         boolean[] recStack = new boolean[numVertices];  // Para marcar vértices no caminho da recursão
 
@@ -56,6 +72,16 @@ public class WaitforGraph {
             }
         }
         return false;  // Se nenhum ciclo for encontrado
+    }
+
+    public void printGraph(){
+        for (int i = 0; i < this.arestas.size(); i++) {
+            System.out.print("Adjacency list of vertex " + i + ": ");
+            for (int j = 0; j < this.arestas.get(i).size(); j++) {
+                System.out.print(this.arestas.get(i).get(j) + " ");
+            }
+            System.out.printf("\n");
+        }
     }
     
 }

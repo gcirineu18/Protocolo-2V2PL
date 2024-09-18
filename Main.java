@@ -24,8 +24,8 @@ public class Main{
      System.out.println(scheduler.scheduleOperations());
      
      scheduler.printTable();
-    // SysLockTable table =  new SysLockTable(schedulerLine);
+    
      
-
-     }
+    }
+     
 }

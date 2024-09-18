@@ -73,7 +73,8 @@ public class SysLockTable {
         }   
       }  
       else{
-        if(aux.get(0).equals(tId) && status == 2 && aux.get(3).equals(String.format("%sl",blockType))){             
+  
+        if(aux.get(0).equals(tId) && aux.get(4).equals("2") && aux.get(3).equals(String.format("%sl",blockType))){             
           aux.set(4, Integer.toString(status));
       }
       }        

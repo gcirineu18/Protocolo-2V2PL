@@ -10,12 +10,9 @@ consequentemente não podendo haver conflitos de cl com qualquer outro)?
 
 
 pendências:
+
 [ ] WaitforGraph: função para: (levy)
     
-    [ ] criar grafo quando houverem operações em conflito
-    
-    [ ] se houver ciclo, abortar a transação mais recente
-
 [ ] Verificar a granulosidade
 
 [ ] Update lock (bru)
