@@ -24,7 +24,7 @@ public class WaitforGraph {
         }      
         if(!alreadyAdded) this.arestas.get(u).add(v);
         // printGraph();
-        
+        // System.out.printf("\n");
     }
     
     public void removeEdge(int u){
@@ -35,7 +35,7 @@ public class WaitforGraph {
                 if(this.arestas.get(i).get(j) == u){
                     this.arestas.get(i).remove(j);
                 }
-            }
+            }        
         }
     }
 

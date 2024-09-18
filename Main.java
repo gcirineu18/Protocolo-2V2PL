@@ -23,9 +23,8 @@ public class Main{
      Scheduler scheduler = new Scheduler(arrayList);
      System.out.println(scheduler.scheduleOperations());
      
-     scheduler.printTable();
-    
-     
+    // scheduler.printTable();
+   
     }
      
 }
