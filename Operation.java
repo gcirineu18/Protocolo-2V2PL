@@ -7,7 +7,7 @@ public class Operation {
         this.operation = operation;
     }
 
-    //  w2(u)ul4(x)r3(y)c1
+    //  w2(u)u4(x)r3(y)c1
     public static char getTransactionId(String operation){
     char[] arrayOperation = operation.toCharArray();   
     char transactionNumber = arrayOperation[1];

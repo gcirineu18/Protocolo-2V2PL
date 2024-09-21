@@ -8,12 +8,14 @@ public class Scheduler extends SysLockTable{
   private WaitforGraph aGraph;
   DeadLockDetection deadLockDetection;
   ArrayList<Character> abortedT = new ArrayList<>();
+  boolean deadlocked;
 
   public Scheduler(ArrayList<String> operations){
     this.operations = operations;
     this.sysLockTable = new SysLockTable();
     this.aGraph = new WaitforGraph();
     deadLockDetection = new DeadLockDetection(this.sysLockTable, this.operations, this.aGraph);
+    this.deadlocked = false;
   }
 
   public String scheduleOperations() throws InterruptedException{
@@ -21,16 +23,31 @@ public class Scheduler extends SysLockTable{
       String operation;
       String newScheduler = "";
       int i = 0;
-      while( i < numberElements ){
-         operation = this.operations.get(i);
-         newScheduler = newScheduler.concat(tryToGrantLock(operation, false));        
-         newScheduler = newScheduler.concat(listenTableEvents());         
-        
-         numberElements = this.operations.size();
-         i++;
-         //printTable();
-      }
       
+      char transactionId;
+      
+      while( i < numberElements){
+        operation = this.operations.get(i); 
+
+        if(!this.abortedT.isEmpty()){
+          for(int j = 0; j < this.abortedT.size(); j++){
+            transactionId = Operation.getTransactionId(operation);
+            if(abortedT.get(j).equals(transactionId)){ 
+              break;
+            }
+            else{
+              newScheduler = newScheduler.concat(tryToGrantLock(operation, false)); 
+              newScheduler = newScheduler.concat(listenTableEvents());
+            }
+          }
+        }
+        else{
+          newScheduler = newScheduler.concat(tryToGrantLock(operation, false)); 
+          newScheduler = newScheduler.concat(listenTableEvents());    
+          }   
+      //   printTable(); 
+         i++;   
+    }
       newScheduler = newScheduler.concat(listenTableEvents());  
       String actualScheduler = "S = " + retrieveAbortedOperations(newScheduler);      
       return actualScheduler;
@@ -145,9 +162,10 @@ public class Scheduler extends SysLockTable{
    else{
      
    }
-   if(!granted && this.aGraph.hasCycle()){        
-    deadLockDetection.deadLocked(operation);
-    this.abortedT.add(Operation.getTransactionId(operation)); 
+   if(!granted && this.aGraph.hasCycle()){   
+    this.deadlocked = true;     
+    String toBeAborted = deadLockDetection.mostRecentTransaction(aGraph.transactionsInCicle());
+    this.abortedT.add(Operation.getTransactionId(toBeAborted)); 
   }   
     if(granted){
       return operation;
