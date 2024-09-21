@@ -6,7 +6,7 @@ public class Utils {
 
      // Checa se as operações da transação estão sintáticamente corretas.
     // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1   
-    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1w4(u)r3(x)c4w2(x)c2w3(u)w3(z)c3
+    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1w4(u)r3(x)c4w2(x)c2w3(u)w3(z)c3ru1(x)
     // r2(v)r1(x)w2(x)r3(v)r1(y)w3(y)r2(z)w3(z)c3c1c2
     public static boolean correctTransaction(String scheduler){     
       if(scheduler.isEmpty() || scheduler.contains(" ")){
@@ -20,7 +20,7 @@ public class Utils {
 
       while(newScheduler.length() > 0){
          
-        if((arrayScheduler[0] == 'w' || arrayScheduler[0] == 'r') && newScheduler.length() >= 5){ 
+        if((arrayScheduler[0] == 'w' || arrayScheduler[0] == 'r') && arrayScheduler[1] != 'u' && newScheduler.length() >= 5){ 
             
             regexScheduler = newScheduler.substring(0,5);
 
@@ -40,16 +40,17 @@ public class Utils {
             }      
             newScheduler = newScheduler.substring(2);
           }
-          else if(arrayScheduler[0] == 'u' && newScheduler.length() >= 6){
+          else if(arrayScheduler[0] == 'r' && arrayScheduler[1] == 'u' && newScheduler.length() >= 6){
             regexScheduler = newScheduler.substring(0,6);
-
-            if(!Pattern.matches("[u][l][0-9]\\([a-z]\\)", regexScheduler)){           
+                
+            if(!Pattern.matches("[r][u][0-9]\\([a-z]\\)", regexScheduler)){           
                 System.out.println("Operação Inválida.");  
                 return false; 
+            }
+            newScheduler = newScheduler.substring(6);
           }
-          newScheduler = newScheduler.substring(6);
-        }
           else{
+           
             System.out.println("Operação Inválida.");  
             return false;
           }      
@@ -66,7 +67,7 @@ public class Utils {
 
         while(scheduler.length() > 0){
          
-            if((arrayCharScheduler[0] == 'w' || arrayCharScheduler[0] == 'r') ){                
+            if((arrayCharScheduler[0] == 'w' || arrayCharScheduler[0] == 'r') && arrayCharScheduler[1] != 'u'){                
                 arrayListScheduler.add(scheduler.substring(0,5));                  
                 scheduler = scheduler.substring(5);              
               }

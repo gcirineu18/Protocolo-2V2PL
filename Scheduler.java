@@ -38,7 +38,15 @@ public class Scheduler extends SysLockTable{
   public String tryToGrantLock(String operation, boolean alreadyAdded) throws InterruptedException{
     char[] arrayOperation = operation.toCharArray();   
     boolean granted = false;
-    char transactionNumber = arrayOperation[1];
+    char transactionNumber = '\0';
+
+    if ((arrayOperation[0] == 'w' || arrayOperation[0] == 'r') && arrayOperation[1] != 'u'){
+      transactionNumber = arrayOperation[1];
+    }
+    else{
+      transactionNumber = arrayOperation[2];
+    }
+    
     char objectId;
     String certifyLock;
     String writeLock;

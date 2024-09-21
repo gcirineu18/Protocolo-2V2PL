@@ -15,7 +15,7 @@ public class SysLockTable {
     String tId;
     String objId;
 
-    if(arrayOperation[0] =='r'){
+    if(arrayOperation[0] =='r' && arrayOperation[1] != 'u'){
       tId = "T" + arrayOperation[1];
       objId = Character.toString(arrayOperation[3]);
       this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "rl", Integer.toString(status))));
@@ -24,11 +24,9 @@ public class SysLockTable {
       tId = "T" + arrayOperation[1];
       objId = Character.toString(arrayOperation[3]);
       this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "wl", Integer.toString(status))));
-
    } 
    // Deve checar antes se existe operação de escrita na transação para convertê-la em cl, se não, vapo
    else if(arrayOperation[0] =='c'){
-
     int linhas = this.sysLockTable.size() ;
     ArrayList<String> aux;
     tId = "T" + arrayOperation[1];
@@ -46,9 +44,9 @@ public class SysLockTable {
     } 
   }
   else{
-    tId = "T" + arrayOperation[1];
+    tId = "T" + arrayOperation[2];
     objId = Character.toString(arrayOperation[3]);
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "ul", Integer.toString(status))));
+    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "rul", Integer.toString(status))));
   }  
   }
   
@@ -76,11 +74,8 @@ public class SysLockTable {
   
         if(aux.get(0).equals(tId) && aux.get(4).equals("2") && aux.get(3).equals(String.format("%sl",blockType))){             
           aux.set(4, Integer.toString(status));
-      }
+        }
       }        
-      
     } 
   }
-
-
 }
