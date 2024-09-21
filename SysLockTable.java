@@ -15,7 +15,7 @@ public class SysLockTable {
     String tId;
     String objId;
 
-    if(arrayOperation[0] =='r' && arrayOperation[1] != 'u'){
+    if(arrayOperation[0] =='r'){
       tId = "T" + arrayOperation[1];
       objId = Character.toString(arrayOperation[3]);
       this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "rl", Integer.toString(status))));
@@ -25,6 +25,11 @@ public class SysLockTable {
       objId = Character.toString(arrayOperation[3]);
       this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "wl", Integer.toString(status))));
    } 
+   else if(arrayOperation[0] =='u'){
+    tId = "T" + arrayOperation[1];
+    objId = Character.toString(arrayOperation[3]);
+    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "ul", Integer.toString(status))));
+ } 
    // Deve checar antes se existe operação de escrita na transação para convertê-la em cl, se não, vapo
    else if(arrayOperation[0] =='c'){
     int linhas = this.sysLockTable.size() ;
@@ -42,12 +47,7 @@ public class SysLockTable {
             break;
       } 
     } 
-  }
-  else{
-    tId = "T" + arrayOperation[2];
-    objId = Character.toString(arrayOperation[3]);
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "rul", Integer.toString(status))));
-  }  
+  } 
   }
   
   // Muda o status de alguma operação após algum evento.

@@ -6,7 +6,7 @@ public class Utils {
 
      // Checa se as operações da transação estão sintáticamente corretas.
     // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1   
-    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1w4(u)r3(x)c4w2(x)c2w3(u)w3(z)c3ru1(x)
+    // r4(v)r3(y)r1(y)r1(x)w2(u)r2(x)w1(y)r2(y)c1w4(u)r3(x)c4w2(x)c2w3(u)w3(z)c3
     // r2(v)r1(x)w2(x)r3(v)r1(y)w3(y)r2(z)w3(z)c3c1c2
     // r1(a)r2(b)w1(a)r3(c)r4(d)r2(a)w3(b)r1(b)w4(c)r2(c)c1w2(d)w3(e)c2c3c4
     // r3(u)r2(v)w2(u)r3(w)r1(v)w3(x)r4(y)r2(w)w3(u)c2c3c4c1
@@ -24,11 +24,11 @@ public class Utils {
 
       while(newScheduler.length() > 0){
          
-        if((arrayScheduler[0] == 'w' || arrayScheduler[0] == 'r') && arrayScheduler[1] != 'u' && newScheduler.length() >= 5){ 
+        if((arrayScheduler[0] == 'w' || arrayScheduler[0] == 'r' || arrayScheduler[0] == 'u') && newScheduler.length() >= 5){ 
             
             regexScheduler = newScheduler.substring(0,5);
 
-            if(!Pattern.matches("[rw][0-9]\\([a-z]\\)", regexScheduler)){           
+            if(!Pattern.matches("[rwu][0-9]\\([a-z]\\)", regexScheduler)){           
                 System.out.println("Operação Inválida.");  
                 return false;
             }            
@@ -43,15 +43,6 @@ public class Utils {
                 return false;
             }      
             newScheduler = newScheduler.substring(2);
-          }
-          else if(arrayScheduler[0] == 'r' && arrayScheduler[1] == 'u' && newScheduler.length() >= 6){
-            regexScheduler = newScheduler.substring(0,6);
-                
-            if(!Pattern.matches("[r][u][0-9]\\([a-z]\\)", regexScheduler)){           
-                System.out.println("Operação Inválida.");  
-                return false; 
-            }
-            newScheduler = newScheduler.substring(6);
           }
           else{
            
@@ -71,7 +62,7 @@ public class Utils {
 
         while(scheduler.length() > 0){
          
-            if((arrayCharScheduler[0] == 'w' || arrayCharScheduler[0] == 'r') && arrayCharScheduler[1] != 'u'){                
+            if((arrayCharScheduler[0] == 'w' || arrayCharScheduler[0] == 'r' || arrayCharScheduler[0] == 'u') ){                
                 arrayListScheduler.add(scheduler.substring(0,5));                  
                 scheduler = scheduler.substring(5);              
               }
@@ -80,10 +71,10 @@ public class Utils {
                 arrayListScheduler.add(scheduler.substring(0,2));   
                 scheduler = scheduler.substring(2);
               }   
-              else{
-                arrayListScheduler.add(scheduler.substring(0,6));                 
-                scheduler = scheduler.substring(6);                     
-              } 
+              // else{
+              //   arrayListScheduler.add(scheduler.substring(0,6));                 
+              //   scheduler = scheduler.substring(6);                     
+              // } 
               arrayCharScheduler = scheduler.toCharArray();
           }
           System.out.println(arrayListScheduler);

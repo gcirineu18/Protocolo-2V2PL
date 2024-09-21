@@ -58,15 +58,7 @@ public class Scheduler extends SysLockTable{
   public String tryToGrantLock(String operation, boolean alreadyAdded) throws InterruptedException{
     char[] arrayOperation = operation.toCharArray();   
     boolean granted = false;
-    char transactionNumber = '\0';
-
-    if ((arrayOperation[0] == 'w' || arrayOperation[0] == 'r') && arrayOperation[1] != 'u'){
-      transactionNumber = arrayOperation[1];
-    }
-    else{
-      transactionNumber = arrayOperation[2];
-    }
-    
+    char transactionNumber = arrayOperation[1];
     char objectId;
     String certifyLock;
     String writeLock;
@@ -91,6 +83,28 @@ public class Scheduler extends SysLockTable{
       }      
     }
     else if(arrayOperation[0] =='w'){
+
+      objectId = arrayOperation[3];
+      certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);
+      writeLock = String.format("wl%c(%c)",transactionNumber,objectId);
+      granted = canScheduleOperation("wl",writeLock, certifyLock);  
+ 
+      if(!alreadyAdded){
+        if(granted){
+          sysLockTable.addOperationToTable(operation, 1); 
+        }
+        else{
+          sysLockTable.addOperationToTable(operation, 2); 
+        }
+      }
+      else{      
+        if(granted){        
+          sysLockTable.changeStatusOnTable(operation, 1);          
+        }
+      }
+    }
+    
+    else if(arrayOperation[0] =='u'){
 
       objectId = arrayOperation[3];
       certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);
