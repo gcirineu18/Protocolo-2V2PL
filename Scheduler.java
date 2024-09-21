@@ -7,6 +7,7 @@ public class Scheduler extends SysLockTable{
   ArrayList<String> operations;
   private WaitforGraph aGraph;
   DeadLockDetection deadLockDetection;
+  ArrayList<Character> abortedT = new ArrayList<>();
 
   public Scheduler(ArrayList<String> operations){
     this.operations = operations;
@@ -18,19 +19,21 @@ public class Scheduler extends SysLockTable{
   public String scheduleOperations() throws InterruptedException{
       int numberElements = this.operations.size();
       String operation;
-      String newScheduler = "S = ";
+      String newScheduler = "";
       int i = 0;
       while( i < numberElements ){
          operation = this.operations.get(i);
          newScheduler = newScheduler.concat(tryToGrantLock(operation, false));        
          newScheduler = newScheduler.concat(listenTableEvents());         
-       // printTable();
+        
          numberElements = this.operations.size();
          i++;
+         //printTable();
       }
-        newScheduler = newScheduler.concat(listenTableEvents());  
-        
-      return newScheduler;
+      
+      newScheduler = newScheduler.concat(listenTableEvents());  
+      String actualScheduler = "S = " + retrieveAbortedOperations(newScheduler);      
+      return actualScheduler;
   }
 
   //  w2(u)ul4(x)r3(y)c1
@@ -152,13 +155,13 @@ public class Scheduler extends SysLockTable{
    }
    if(!granted && this.aGraph.hasCycle()){        
     deadLockDetection.deadLocked(operation);
+    this.abortedT.add(Operation.getTransactionId(operation)); 
   }   
     if(granted){
       return operation;
     }
     return "";
   }
-
 
   // Retorna falso se, dado o parâmetro, 
   // a operação não poder ser escalonada - 
@@ -248,7 +251,6 @@ public class Scheduler extends SysLockTable{
     
   }
   
-
    // w2(u)ul4(x)r3(y)c1
   private String listenTableEvents() throws InterruptedException{
     int linhas = this.sysLockTable.sysLockTable.size();
@@ -302,5 +304,21 @@ public class Scheduler extends SysLockTable{
       }
       System.out.printf("\n");
     }
+  }
+
+  public String retrieveAbortedOperations(String newScheduler){
+    int totalAborts = this.abortedT.size();
+    ArrayList<String> newSchedulerList = Utils.parseScheduler(newScheduler); 
+    newScheduler = ""; 
+    for(int i = 0; i < totalAborts; i++){
+      for(int j = 0; j < newSchedulerList.size(); j++){
+        if(this.abortedT.get(i).equals(Operation.getTransactionId(newSchedulerList.get(j)))){
+            newSchedulerList.remove(j);
+            j = 0;
+        }   
+      }
+    }
+    newScheduler = String.join("", newSchedulerList);
+    return newScheduler;
   }
 }
