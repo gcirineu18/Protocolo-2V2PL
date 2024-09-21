@@ -85,7 +85,7 @@ public class Utils {
               } 
               arrayCharScheduler = scheduler.toCharArray();
           }
-          System.out.println(arrayListScheduler);
+        
           return arrayListScheduler;
     }   
 }
