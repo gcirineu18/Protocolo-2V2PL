@@ -12,8 +12,34 @@ public class DeadLockDetection{
             this.operations = operations;         
     }
 
-    public void deadLocked(String op) throws InterruptedException{
-        int linhas = this.sysLockTable.sysLockTable.size() ;
+    public String mostRecentTransaction( ArrayList<String> transactionsInCycle) throws InterruptedException{
+      int linhas = this.sysLockTable.sysLockTable.size();
+      int count = 0;
+      String abortTransaction = "";
+      ArrayList<String> aux;
+      int tSize = transactionsInCycle.size();
+      for(int i = 0; i < linhas ; i++){
+         for(int j = 0 ; j < transactionsInCycle.size(); j++){               
+             aux = this.sysLockTable.sysLockTable.get(i);
+             
+             if(count == tSize){
+               break;
+             }
+
+             if(aux.get(4).equals("1") && aux.get(0).equals(transactionsInCycle.get(j))){
+                abortTransaction = transactionsInCycle.get(j);  
+                count ++; 
+                transactionsInCycle.remove(j);
+                j = 0;
+             }
+            }
+      } 
+      deadLocked(abortTransaction);   
+      return abortTransaction;
+  }
+
+    public void deadLocked( String op) throws InterruptedException{
+        int linhas = this.sysLockTable.sysLockTable.size();
         char[] charArray = op.toCharArray();
         
         String transactionId = "T" + charArray[1];
@@ -29,19 +55,7 @@ public class DeadLockDetection{
            i = 0;
            linhas--;    
           }
-        }
-
-        // Removendo as operações da Transação abortada do escalonamento de entrada
-        char opNumber= Operation.getTransactionId(op);
-        char operationsNumbers;
-        for(int j = 0; j < operations.size(); j++){
-             operationsNumbers = Operation.getTransactionId(operations.get(j));
-             
-             if(opNumber == operationsNumbers){              
-              operations.remove(j);
-              j = 0;
-             }
-        }          
+        }        
         this.aGraph.removeEdge(Character.getNumericValue(charArray[1]));
         System.out.printf("Foi detectado um deadlock, removendo a transação mais recente %s...\n", transactionId); 
       }

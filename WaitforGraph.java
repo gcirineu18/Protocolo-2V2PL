@@ -4,6 +4,8 @@ import java.util.ArrayList;
 public class WaitforGraph {
     
     ArrayList<ArrayList<Integer>> arestas;
+    ArrayList<String> inCicleTs;
+
     public WaitforGraph(){
      this.arestas = new ArrayList<>();
     }
@@ -48,9 +50,10 @@ public class WaitforGraph {
         }
         visited[v] = true;
         recStack[v] = true;
-
+         
         for (int vizinhos : this.arestas.get(v)) {
             if (DFS(vizinhos, visited, recStack)) {
+                this.inCicleTs.add("T" + Integer.toString(v));                      
                 return true;  // Se ciclo for encontrado, retorna true
             }
         }
@@ -65,14 +68,22 @@ public class WaitforGraph {
         boolean[] visited = new boolean[numVertices];   // Para marcar vértices visitados
         boolean[] recStack = new boolean[numVertices];  // Para marcar vértices no caminho da recursão
 
+        this.inCicleTs = new ArrayList<>(); 
+
         // Chama DFS para cada vértice
         for (int i = 0; i < numVertices; i++) {
-            if (!visited[i] && DFS(i, visited, recStack)) {
+            if (!visited[i] && DFS(i, visited, recStack)) {  
+                transactionsInCicle();                             
                 return true;  // Se um ciclo for encontrado, retorna true
             }
         }
         return false;  // Se nenhum ciclo for encontrado
     }
+
+    public ArrayList<String> transactionsInCicle(){
+        System.out.println(this.inCicleTs);
+        return this.inCicleTs;
+     }
 
     public void printGraph(){
         for (int i = 0; i < this.arestas.size(); i++) {
