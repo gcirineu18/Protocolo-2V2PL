@@ -25,8 +25,8 @@ public class WaitforGraph {
             }
         }      
         if(!alreadyAdded) this.arestas.get(u).add(v);
-        printGraph();
-         System.out.printf("\n");
+        // printGraph();
+        //  System.out.printf("\n");
     }
     
     public void removeEdge(int u){
@@ -83,6 +83,11 @@ public class WaitforGraph {
         System.out.println(this.inCicleTs);
         return this.inCicleTs;
      }
+
+    // Verifica se há uma aresta para um dado vértice 
+    public boolean hasEdge(int u){     
+      return  this.arestas.get(u).size() > 0 ? true : false; 
+    }
 
     public void printGraph(){
         for (int i = 0; i < this.arestas.size(); i++) {

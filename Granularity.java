@@ -25,7 +25,8 @@ public boolean canScheduleOperationCheckingIntents(String actualOperation, Strin
     ArrayList<String> table;
     String aux =  operations[0]; 
     char[] charArray = aux.toCharArray();
-    String transactionId = "T" + charArray[3] ;
+    String transactionId = "T" + charArray[3];
+    int verticeU =  Character.getNumericValue(charArray[3]);;
 
     if(!onlyCurrentTransaction(transactionId)){
 
@@ -41,7 +42,7 @@ public boolean canScheduleOperationCheckingIntents(String actualOperation, Strin
             table = this.sysLockTable.sysLockTable.get(i);  
 
             if(table.get(0).equals(tId) && table.get(4).equals("2" ) && 
-            !table.get(3).equals(actualOperation)){
+            !table.get(3).equals(actualOperation) && this.aGraph.hasEdge(verticeU)){
               return false;
             }        
         
@@ -51,12 +52,10 @@ public boolean canScheduleOperationCheckingIntents(String actualOperation, Strin
             int transactionNumberU = Character.getNumericValue(charArray[3]);
             char[] transactionvArray = table.get(0).toCharArray();
             int transactionNumberV = Character.getNumericValue(transactionvArray[1]);
-            this.aGraph.addEdge(transactionNumberU, transactionNumberV);  
-            
-             System.out.printf("Adicionando aresta %d e %d em granulosity\n",transactionNumberU, transactionNumberV);         
+            this.aGraph.addEdge(transactionNumberU, transactionNumberV);            
             return false;
             }              
-        } 
+         } 
         } 
     }   
     return true;
