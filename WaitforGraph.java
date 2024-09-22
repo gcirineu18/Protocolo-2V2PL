@@ -1,8 +1,7 @@
 
 import java.util.ArrayList;
 
-public class WaitforGraph {
-    
+public class WaitforGraph {   
     ArrayList<ArrayList<Integer>> arestas;
     ArrayList<String> inCicleTs;
 
@@ -80,7 +79,7 @@ public class WaitforGraph {
     }
 
     public ArrayList<String> transactionsInCicle(){
-        System.out.println(this.inCicleTs);
+       // System.out.println(this.inCicleTs);
         return this.inCicleTs;
      }
 
@@ -97,6 +96,5 @@ public class WaitforGraph {
             }
             System.out.printf("\n");
         }
-    }
-    
+    }  
 }

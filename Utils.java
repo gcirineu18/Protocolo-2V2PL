@@ -34,8 +34,7 @@ public class Utils {
                 System.out.println("Operação Inválida.");  
                 return false;
             }            
-            newScheduler = newScheduler.substring(5);
-            
+            newScheduler = newScheduler.substring(5);          
           }
           else if(arrayScheduler[0] == 'c' && newScheduler.length() >= 2){
             regexScheduler = newScheduler.substring(0,2);
@@ -46,8 +45,7 @@ public class Utils {
             }      
             newScheduler = newScheduler.substring(2);
           }
-          else{
-           
+          else{          
             System.out.println("Operação Inválida.");  
             return false;
           }      
