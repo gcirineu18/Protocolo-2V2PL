@@ -69,7 +69,6 @@ public class SysLockTable {
        }
     }    
 
- 
  // adicionar os bloqueios intencionais apenas se o status for 1 e se não
  // houver nenhum outro intencional do mesmo tipo criado
   int lines = this.sysLockTable.size();
@@ -111,6 +110,7 @@ public class SysLockTable {
     this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "T", "table", whatIntentToAdd, Integer.toString(status)))); 
   } 
 }
+
   
   // Muda o status de alguma operação após algum evento.
   // r4(v)w2(u)c1

@@ -43,7 +43,7 @@ public class Scheduler extends SysLockTable {
         newScheduler = newScheduler.concat(tryToGrantLock(operation, false));
         newScheduler = newScheduler.concat(listenTableEvents());
       }
-     // printTable();
+      printTable();
       i++;
     }
     newScheduler = newScheduler.concat(listenTableEvents());
