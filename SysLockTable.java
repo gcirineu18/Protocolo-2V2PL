@@ -38,7 +38,7 @@ public class SysLockTable {
     } 
    // Deve checar antes se existe operação de escrita na transação para convertê-la em cl, se não, vapo
     else if(arrayOperation[0] =='c'){
-       if(writeLockHashMap == null){
+       if(writeLockHashMap == null){  
         this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "-", "row", "c", Integer.toString(status))));
        }
        else{
@@ -64,52 +64,56 @@ public class SysLockTable {
               break;
              }       
           } 
-        } 
+        }       
         this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "-", "row", "c", Integer.toString(status))));
        }
-    }    
-
- // adicionar os bloqueios intencionais apenas se o status for 1 e se não
- // houver nenhum outro intencional do mesmo tipo criado
-  int lines = this.sysLockTable.size();
-  ArrayList<String> line;
-  boolean addIntent = true;
-  
-  for(int j = 1; j < lines; j++){
-    line = sysLockTable.get(j);
-    if(arrayOperation[0] =='r'){
-      if(status == 1 && line.get(3).equals("irl") && (line.get(2).equals("table") || 
-      line.get(2).equals("page"))){
-         addIntent = false;
-         break;
-      }
-    } 
-    else if(arrayOperation[0] =='w'){
-      if(status == 1 && line.get(3).equals("iwl") && (line.get(2).equals("table") ||
-       line.get(2).equals("page"))){
-         addIntent = false;
-         break;
-      } 
-    } 
-    else if(arrayOperation[0] =='u'){
-      if(status == 1 && line.get(3).equals("iul") && (line.get(2).equals("table") || line.get(2).equals("page"))){
-        addIntent = false;
-        break;
-      }
-    }    
-    else if(arrayOperation[0] =='c' && certifyLocked){
-       if(status == 1 && line.get(3).equals("icl") && (line.get(2).equals("table") || line.get(2).equals("page"))){
-         addIntent = false;
-         break;
-      } 
-    }
-  }
-  // this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "ul", Integer.toString(status))));
-  if(addIntent && status == 1){
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "P", "page", whatIntentToAdd, Integer.toString(status)))); 
-    this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "T", "table", whatIntentToAdd, Integer.toString(status)))); 
-  } 
+    }   
+    addIntent(whatIntentToAdd, arrayOperation, status, certifyLocked, tId); 
 }
+
+
+  private void addIntent(String whatIntentToAdd, char[] arrayOperation, int status, boolean certifyLocked, String tId){
+  // adicionar os bloqueios intencionais apenas se o status for 1 e se não
+  // houver nenhum outro intencional do mesmo tipo criado
+    int lines = this.sysLockTable.size();
+    ArrayList<String> line;
+    boolean addIntent = true;
+    
+    for(int j = 1; j < lines; j++){
+      line = sysLockTable.get(j);
+      if(arrayOperation[0] =='r'){
+        if(status == 1 && line.get(3).equals("irl") && (line.get(2).equals("table") || 
+        line.get(2).equals("page"))){
+          addIntent = false;
+          break;
+        }
+      } 
+      else if(arrayOperation[0] =='w'){
+        if(status == 1 && line.get(3).equals("iwl") && (line.get(2).equals("table") ||
+        line.get(2).equals("page"))){
+          addIntent = false;
+          break;
+        } 
+      } 
+      else if(arrayOperation[0] =='u'){
+        if(status == 1 && line.get(3).equals("iul") && (line.get(2).equals("table") || line.get(2).equals("page"))){
+          addIntent = false;
+          break;
+        }
+      }    
+      else if(arrayOperation[0] =='c' && certifyLocked){
+        if(status == 1 && line.get(3).equals("icl") && (line.get(2).equals("table") || line.get(2).equals("page"))){
+          addIntent = false;
+          break;
+        } 
+      }
+    }
+    // this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, objId, "row", "ul", Integer.toString(status))));
+    if(addIntent && status == 1 && !whatIntentToAdd.isEmpty()){
+      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "P", "page", whatIntentToAdd, Integer.toString(status)))); 
+      this.sysLockTable.add(new ArrayList<>(Arrays.asList(tId, "T", "table", whatIntentToAdd, Integer.toString(status)))); 
+    } 
+  }
 
   
   // Muda o status de alguma operação após algum evento.
@@ -120,6 +124,9 @@ public class SysLockTable {
     String blockType = Character.toString(arrayOperation[0]);
     int linhas = this.sysLockTable.size() ;
     ArrayList<String> lineSysLock;
+
+    boolean certifyLocked = false;
+    String whatIntentToAdd = "";
           
     for(int i = 1; i < linhas; i++){
       
@@ -129,6 +136,8 @@ public class SysLockTable {
         if(lineSysLock.get(0).equals(tId) && status == 1 && lineSysLock.get(3).equals("wl")){             
             lineSysLock.set(3, "cl");
             lineSysLock.set(4, Integer.toString(status));
+            whatIntentToAdd = "icl";
+            certifyLocked = true;
         }
         else if(lineSysLock.get(3).equals("c") && lineSysLock.get(0).equals(tId) && 
         lineSysLock.get(4).equals("2")){
@@ -139,10 +148,12 @@ public class SysLockTable {
       else{
         if(lineSysLock.get(0).equals(tId) && lineSysLock.get(4).equals("2") && 
         lineSysLock.get(3).equals(String.format("%sl",blockType))){  
-                     
+          whatIntentToAdd = String.format("i%sl",blockType);           
           lineSysLock.set(4, Integer.toString(status));
         }
       }        
     } 
+    addIntent(whatIntentToAdd, arrayOperation, status, certifyLocked, tId); 
   }
+
 }
