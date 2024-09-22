@@ -24,12 +24,16 @@ public class WaitforGraph {
             }
         }      
         if(!alreadyAdded) this.arestas.get(u).add(v);
-       //  printGraph();
+        //printGraph();
         //  System.out.printf("\n");
     }
     
     public void removeEdge(int u){
-        
+          
+        if(u > this.arestas.size()-1){
+            return;
+        }
+
         this.arestas.get(u).clear();
         for(int i = 0; i<this.arestas.size(); i++){
             for(int j = 0; j<this.arestas.get(i).size(); j++){

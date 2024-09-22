@@ -28,22 +28,27 @@ public class Scheduler extends SysLockTable {
 
     while (i < numberElements) {
       operation = this.operations.get(i);
-
+      
       if (!this.abortedT.isEmpty()) {
+        boolean aborted = false; 
         for (int j = 0; j < this.abortedT.size(); j++) {
           transactionId = Operation.getTransactionId(operation);
-          if (abortedT.get(j).equals(transactionId)) {
+          if (abortedT.get(j).equals(transactionId)) { 
+            aborted = true;   
             break;
-          } else {
-            newScheduler = newScheduler.concat(tryToGrantLock(operation, false));
-            newScheduler = newScheduler.concat(listenTableEvents());
-          }
+          }               
         }
-      } else {
+        if(!aborted){        
+          newScheduler = newScheduler.concat(tryToGrantLock(operation, false));
+          newScheduler = newScheduler.concat(listenTableEvents());  
+        }
+       
+      } else {              
         newScheduler = newScheduler.concat(tryToGrantLock(operation, false));
         newScheduler = newScheduler.concat(listenTableEvents());
-      }
-      //printTable();
+      }   
+     // printTable();
+      
       i++;
     }
     newScheduler = newScheduler.concat(listenTableEvents());
@@ -211,6 +216,7 @@ public class Scheduler extends SysLockTable {
       this.abortedT.add(Operation.getTransactionId(toBeAborted));
       // listenTableEvents();
     }
+
     if (granted) {
       return operation;
     }
@@ -290,7 +296,7 @@ public class Scheduler extends SysLockTable {
 
     Thread.sleep(1000);
 
-    // printTable();
+   //  printTable();
     for (int i = 0; i < linhas; i++) {
       tId = this.sysLockTable.sysLockTable.get(i).get(0);
 
@@ -303,7 +309,6 @@ public class Scheduler extends SysLockTable {
     char[] charArray = transactionId.toCharArray();
     this.aGraph.removeEdge(Character.getNumericValue(charArray[1]));
     System.out.printf("Transação %s foi commitada.\n", transactionId);
-    // listenTableEvents();
   }
 
   // w2(u)ul4(x)r3(y)c1
