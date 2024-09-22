@@ -25,8 +25,8 @@ public class WaitforGraph {
             }
         }      
         if(!alreadyAdded) this.arestas.get(u).add(v);
-        // printGraph();
-        // System.out.printf("\n");
+        printGraph();
+         System.out.printf("\n");
     }
     
     public void removeEdge(int u){
@@ -53,11 +53,10 @@ public class WaitforGraph {
          
         for (int vizinhos : this.arestas.get(v)) {
             if (DFS(vizinhos, visited, recStack)) {
-                this.inCicleTs.add("T" + Integer.toString(v));                      
+                this.inCicleTs.add("T" + Integer.toString(vizinhos));                      
                 return true;  // Se ciclo for encontrado, retorna true
             }
         }
-
         recStack[v] = false;
         return false;
     }

@@ -31,9 +31,9 @@ public class Operation {
 
           if(blockType.equals("cl")){
               op = String.format("w%s(%s)",tId,objId); 
-              
+        
            }
-          else{
+          else {
             blockType = blockType.substring(0,1);             
             op = String.format("%s%s(%s)",blockType,tId,objId);    
             }

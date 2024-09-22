@@ -8,14 +8,15 @@ public class Scheduler extends SysLockTable{
   private WaitforGraph aGraph;
   DeadLockDetection deadLockDetection;
   ArrayList<Character> abortedT = new ArrayList<>();
-  boolean deadlocked;
+  Granularity granularity;
+  
 
   public Scheduler(ArrayList<String> operations){
     this.operations = operations;
     this.sysLockTable = new SysLockTable();
     this.aGraph = new WaitforGraph();
-    deadLockDetection = new DeadLockDetection(this.sysLockTable, this.operations, this.aGraph);
-    this.deadlocked = false;
+    this.granularity = new Granularity(this.sysLockTable,  this.aGraph);
+    this.deadLockDetection = new DeadLockDetection(this.sysLockTable, this.operations, this.aGraph);
   }
 
   public String scheduleOperations() throws InterruptedException{
@@ -28,7 +29,7 @@ public class Scheduler extends SysLockTable{
       
       while( i < numberElements){
         operation = this.operations.get(i); 
-
+        
         if(!this.abortedT.isEmpty()){
           for(int j = 0; j < this.abortedT.size(); j++){
             transactionId = Operation.getTransactionId(operation);
@@ -45,7 +46,7 @@ public class Scheduler extends SysLockTable{
           newScheduler = newScheduler.concat(tryToGrantLock(operation, false)); 
           newScheduler = newScheduler.concat(listenTableEvents());    
           }   
-      //   printTable(); 
+        printTable(); 
          i++;   
     }
       newScheduler = newScheduler.concat(listenTableEvents());  
@@ -62,12 +63,27 @@ public class Scheduler extends SysLockTable{
     char objectId;
     String certifyLock;
     String writeLock;
+    String updateLock;
+
+    String certifyIntentLockTable = String.format("icl%c(T)",transactionNumber);
+    String updateIntentLockTable = String.format("iul%c(T)",transactionNumber);
+    String certifyIntentLockPage = String.format("icl%c(P)",transactionNumber);
+    String updateIntentLockPage = String.format("iul%c(P)",transactionNumber);    
+    String writeIntentLockTable = String.format("iwl%c(T)",transactionNumber); 
+    String writeIntentLockPage = String.format("iwl%c(P)",transactionNumber);
+    String readIntentLockTable = String.format("irl%c(T)",transactionNumber); 
+    String readIntentLockPage = String.format("irl%c(P)",transactionNumber);
     
-    if(arrayOperation[0] =='r'){
+    if(arrayOperation[0] =='r'){ //intencional de leitura entra aq
 
       objectId = arrayOperation[3];
-      certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);    
-      granted = canScheduleOperation("rl",certifyLock);
+      certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);
+      updateLock = String.format("ul%c(%c)",transactionNumber,objectId);
+
+      granted = canScheduleOperation("rl",certifyLock,updateLock) 
+      && this.granularity.canScheduleOperationCheckingIntents("rl",certifyIntentLockTable, updateIntentLockTable, 
+      certifyIntentLockPage, updateIntentLockPage);
+
       if(!alreadyAdded){
         if(granted){
           sysLockTable.addOperationToTable(operation, 1); 
@@ -85,10 +101,18 @@ public class Scheduler extends SysLockTable{
     else if(arrayOperation[0] =='w'){
 
       objectId = arrayOperation[3];
-      certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);
-      writeLock = String.format("wl%c(%c)",transactionNumber,objectId);
-      granted = canScheduleOperation("wl",writeLock, certifyLock);  
- 
+      certifyLock = String.format("cl%c(%c)", transactionNumber, objectId);
+      writeLock = String.format("wl%c(%c)", transactionNumber, objectId);
+      updateLock = String.format("ul%c(%c)", transactionNumber, objectId);
+      
+      
+      granted = canScheduleOperation("wl", writeLock, certifyLock, updateLock) &&
+      this.granularity.canScheduleOperationCheckingIntents("wl",certifyIntentLockTable, 
+      updateIntentLockTable, certifyIntentLockPage, updateIntentLockPage,
+      writeIntentLockPage, writeIntentLockTable);  
+      
+       
+
       if(!alreadyAdded){
         if(granted){
           sysLockTable.addOperationToTable(operation, 1); 
@@ -98,7 +122,8 @@ public class Scheduler extends SysLockTable{
         }
       }
       else{      
-        if(granted){        
+        if(granted){    
+              
           sysLockTable.changeStatusOnTable(operation, 1);          
         }
       }
@@ -109,7 +134,12 @@ public class Scheduler extends SysLockTable{
       objectId = arrayOperation[3];
       certifyLock = String.format("cl%c(%c)",transactionNumber,objectId);
       writeLock = String.format("wl%c(%c)",transactionNumber,objectId);
-      granted = canScheduleOperation("wl",writeLock, certifyLock);  
+      updateLock = String.format("ul%c(%c)",transactionNumber,objectId);
+
+      granted = canScheduleOperation("ul",writeLock, certifyLock, updateLock) &&
+      this.granularity.canScheduleOperationCheckingIntents("ul", certifyIntentLockTable, 
+      updateIntentLockTable, certifyIntentLockPage, updateIntentLockPage,
+      writeIntentLockPage, writeIntentLockTable);   
  
       if(!alreadyAdded){
         if(granted){
@@ -128,20 +158,27 @@ public class Scheduler extends SysLockTable{
     else if(arrayOperation[0] =='c'){
       
       String tID = "T" + transactionNumber; 
-      ArrayList<String> objects = hasWriteOperation(tID);
+      ArrayList<String> objects = hasWriteOperationAndScheduled(tID);
       String readLock;
       boolean schedule = true;
 
       if(objects != null){
-        
+      
         for(int i = 0; i< objects.size(); i++){
           readLock = String.format("rl%c(%s)",transactionNumber,objects.get(i));          
-          schedule = canScheduleOperation("c", readLock);
-          if(!schedule){            
-            if(!alreadyAdded){               
-              sysLockTable.addOperationToTable(operation, 2);             
+          
+          schedule = canScheduleOperation("c", readLock) && 
+          this.granularity.canScheduleOperationCheckingIntents("c",
+          readIntentLockTable, readIntentLockPage);
+          
+          if(!schedule){                       
+            if(!alreadyAdded){                           
+              sysLockTable.addOperationToTable(operation, 2);                      
               break;
-            }            
+            }  
+            else{
+              break;  
+            }          
           }
         }
         if(!alreadyAdded){
@@ -160,6 +197,7 @@ public class Scheduler extends SysLockTable{
       else{   
       String lock = String.format("--%c(-)",transactionNumber);    
       granted = canScheduleOperation("c",lock);
+      System.out.printf("Qual operation? %s" + granted + "\n", operation); 
       if(!alreadyAdded){
         if(granted){
           sysLockTable.addOperationToTable(operation, 1); 
@@ -181,15 +219,14 @@ public class Scheduler extends SysLockTable{
       }
       granted = schedule;  
    }
-   else{
-     
-   }
-   if(!granted && this.aGraph.hasCycle()){   
-    this.deadlocked = true;     
-    String toBeAborted = deadLockDetection.mostRecentTransaction(aGraph.transactionsInCicle());
+
+   if(!granted && this.aGraph.hasCycle()){  
+         
+    String toBeAborted = deadLockDetection.mostRecentTransaction(aGraph.transactionsInCicle());  
     this.abortedT.add(Operation.getTransactionId(toBeAborted)); 
+    //printTable();
   }   
-    if(granted){
+    if(granted){     
       return operation;
     }
     return "";
@@ -221,19 +258,23 @@ public class Scheduler extends SysLockTable{
       tId = "T" + arrayOperation[2];
       objId = Character.toString(arrayOperation[4]);
       for(int i = 1; i < linhas ; i++){
-        table = this.sysLockTable.sysLockTable.get(i); 
-        
+        table = this.sysLockTable.sysLockTable.get(i);
+
+        System.out.printf("Tid? %s\n", tId); 
+
         if(table.get(0).equals(tId) && table.get(4).equals("2" ) && 
         !table.get(3).equals(actualOperation)){
               return false;
         }
         else if(!table.get(0).equals(tId) && table.get(1).equals(objId) && 
         table.get(3).equals(blockType) && table.get(4).equals("1")){
-          
+          //System.err.printf("Operaçao %s em conflito\n", operation); 
           int transactionNumberU = Character.getNumericValue(charArray[2]);
           char[] transactionvArray = table.get(0).toCharArray();
           int transactionNumberV = Character.getNumericValue(transactionvArray[1]);
-          this.aGraph.addEdge(transactionNumberU, transactionNumberV);         
+          this.aGraph.addEdge(transactionNumberU, transactionNumberV);   
+
+          System.out.printf("Adicionando aresta %d e %d\n",transactionNumberU, transactionNumberV);   
           return false;
         }              
       } 
@@ -243,7 +284,7 @@ public class Scheduler extends SysLockTable{
   }
 
   // Checa se a transação tem operação de escrita e retorna o(s) objeto(s) da operação caso haja(m)
-  private ArrayList<String> hasWriteOperation(String transactionId ){
+  private ArrayList<String> hasWriteOperationAndScheduled(String transactionId ){
     int linhas = this.sysLockTable.sysLockTable.size() ;
     
     ArrayList<String> table;
@@ -251,13 +292,12 @@ public class Scheduler extends SysLockTable{
     
     for(int i = 1; i < linhas ; i++){
       table = this.sysLockTable.sysLockTable.get(i);         
-      if((table.get(0).equals(transactionId) && table.get(3).equals("wl"))){             
+      if((table.get(0).equals(transactionId) && table.get(3).equals("wl") && table.get(4).equals("1"))){             
             objects.add(table.get(1));            
         }    
     } 
     return objects.isEmpty() ? null : objects;
   }
-
 
   private void commitTransaction(String transactionId) throws InterruptedException{
     ArrayList<String> tupla;
@@ -265,15 +305,14 @@ public class Scheduler extends SysLockTable{
     String tId;
     
     Thread.sleep(1000);
-    String transactionOperations = "";
+   
     //printTable();
     for(int i = 0; i < linhas ; i++){
       tId = this.sysLockTable.sysLockTable.get(i).get(0);
 
      
       if(tId.equals(transactionId)){  
-       tupla = this.sysLockTable.sysLockTable.get(i);
-       transactionOperations = transactionOperations.concat(Operation.rebuildOperation(tupla));   
+       tupla = this.sysLockTable.sysLockTable.get(i);     
        this.sysLockTable.sysLockTable.remove(i);
        i = 0;
        linhas--;    
@@ -292,24 +331,24 @@ public class Scheduler extends SysLockTable{
     String aux = "";
     int i = 1;
     String status;
-    while (i<linhas) {      
+    while (i<linhas) {    
       aux = ""; 
       status = this.sysLockTable.sysLockTable.get(i).get(4);
-      op = Operation.rebuildOperation(this.sysLockTable.sysLockTable.get(i));
+      
       
       if(status.equals("2")){
+         op = Operation.rebuildOperation(this.sysLockTable.sysLockTable.get(i));
+         
         aux = aux.concat(tryToGrantLock(op, true));    
         scheduledOperations = scheduledOperations.concat(aux);
       }
- 
       if(!aux.isEmpty()){
         i = 1;
     } else{
       i++;
     }  
       linhas = this.sysLockTable.sysLockTable.size();
-    }
-    
+    }    
     return scheduledOperations;
   }
 
@@ -344,6 +383,7 @@ public class Scheduler extends SysLockTable{
     newScheduler = ""; 
     for(int i = 0; i < totalAborts; i++){
       for(int j = 0; j < newSchedulerList.size(); j++){
+       
         if(this.abortedT.get(i).equals(Operation.getTransactionId(newSchedulerList.get(j)))){
             newSchedulerList.remove(j);
             j = 0;
@@ -351,6 +391,7 @@ public class Scheduler extends SysLockTable{
       }
     }
     newScheduler = String.join("", newSchedulerList);
+    
     return newScheduler;
   }
 }
