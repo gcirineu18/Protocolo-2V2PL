@@ -23,9 +23,9 @@ public class WaitforGraph {
                 alreadyAdded = true;
             }
         }      
-        if(!alreadyAdded) this.arestas.get(u).add(v);
+        if(!alreadyAdded) this.arestas.get(u).add(v);      
         //printGraph();
-        //  System.out.printf("\n");
+        // System.out.printf("\n");
     }
     
     public void removeEdge(int u){
