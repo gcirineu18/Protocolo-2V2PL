@@ -13,6 +13,7 @@ public class Utils {
     // r1(a)w1(a)r3(c)r4(d)r2(b)r2(a)w3(b)r1(b)w4(c)r2(c)c1w2(d)w3(e)c2c3c4 **
     // r3(u)r2(v)w2(u)r3(w)r1(v)w3(x)r4(y)r2(w)w3(u)c2c3c4c1
     // r2(u)r3(x)r1(x)r1(p)r2(x)w3(u)w2(z)c2w1(x)c1r3(v)r3(p)c3
+    // u3(u)r2(v)w2(u)r3(w)u1(v)w3(x)r4(y)r2(w)w3(u)c2c3c4c1   
     public static boolean correctTransaction(String scheduler){     
       if(scheduler.isEmpty() || scheduler.contains(" ")){
         System.out.println("O escalonador está vazio ou contém espaços.");
