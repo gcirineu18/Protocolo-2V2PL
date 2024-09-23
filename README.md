@@ -3,7 +3,7 @@ Implementação do protocolo conservador 2V2PL, para controle de concorrência, 
 
 pendências:
 
-[x] WaitforGraph: função para: 
+[x] WaitforGraph: função para
     
 [x] Verificar a granulosidade
 
